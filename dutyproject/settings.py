@@ -23,14 +23,14 @@ env.read_env(Path(BASE_DIR).parent / '.env')
 print(Path(BASE_DIR).parent)
 
 SESSION_COOKIE_AGE = 86400  # session lifetime in seconds (eg 1 day)
-API_PERMANENT_TOKEN = env('API_PERMANENT_TOKEN')
-SLACK_TOKEN = env('SLACK_TOKEN')
+API_PERMANENT_TOKEN = env('API_PERMANENT_TOKEN', default="YOUR_API_PERMANENT_TOKEN")  # SECURITY WARNING: keep the secret key used in production secret! 
+SLACK_TOKEN = env('SLACK_TOKEN', default="YOUR_SLACK_TOKEN")  # SECURITY WARNING: keep the secret key used in production secret!
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY', default="YOUR_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

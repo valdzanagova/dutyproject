@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.11-slim
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install PDM and dependencies
+        run: |
+          pip install pdm
+          pdm install --dev
+
+      - name: Run tests
+        run: pdm run python manage.py test
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: test-reports/
+
+  build:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: tcp://localhost:2375
+      DOCKER_DRIVER: overlay2
+      DOCKER_TLS_CERTDIR: ""
+    services:
+      docker:
+        image: docker:20.10.16-dind
+        options: --privileged
+        ports:
+          - 2375:2375
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t dutyapp .
+
+      - name: List Docker images
+        run: docker images
+
+      - name: Save Docker image to tarball
+        run: docker save dutyapp -o dutyapp_image.tar
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dutyapp_image
+          path: dutyapp_image.tar
