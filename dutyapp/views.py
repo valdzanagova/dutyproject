@@ -103,7 +103,7 @@ class DutyAssignmentViewSet(viewsets.ModelViewSet):
         assignment.duty_person = duty_person
         assignment.random = True
 
-        assignment.last_modified_by = 'tbqa@exante.eu' if is_token_request else request.session.get('email')
+        assignment.last_modified_by = 'tech@gmail.com' if is_token_request else request.session.get('email')
 
         assignment.save()
 
@@ -132,7 +132,7 @@ def create_duty_config(request):
         form = DutyConfigForm(request.POST)
         if form.is_valid():
             config = form.save()
-            config.last_modified_by = 'tbqa@exante.eu' if is_token_request else request.session.get('email')
+            config.last_modified_by = 'tech@gmail.com' if is_token_request else request.session.get('email')
             config.save()
             Duty(config=config).generate_schedule()
             return redirect('duty_config_detail', pk=config.pk)
@@ -168,7 +168,7 @@ def edit_duty_config(request, pk):
         if form.is_valid():
             config = form.save()
 
-            config.last_modified_by = 'tbqa@exante.eu' if is_token_request else request.session.get('email')
+            config.last_modified_by = 'tech@gmail.com' if is_token_request else request.session.get('email')
 
             config.save()
 
@@ -187,7 +187,7 @@ def delete_duty_config(request, pk):
     token = request.META.get('HTTP_X_API_TOKEN')
     is_token_request = (token == settings.API_PERMANENT_TOKEN)
     if request.method == 'POST':
-        config.last_modified_by = 'tbqa@exante.eu' if is_token_request else request.session.get('email')
+        config.last_modified_by = 'tech@gmail.com' if is_token_request else request.session.get('email')
         config.delete()
         return redirect('duty_config_list')
     return render(request, 'dutyapp/delete_config.html', {'config': config})
