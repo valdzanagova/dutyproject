@@ -1,0 +1,26 @@
+<!-- dutyapp/templates/dutyapp/config_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Duty Configurations</title>
+</head>
+<body>
+    <h1>All Configurations</h1>
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'create_duty_config' %}" style="font-size: 18px; font-weight: bold;">Create New Configuration</a>
+    </div>
+    <ul>
+        {% for config in configs %}
+            <li>
+                <a href="{% url 'duty_config_detail' pk=config.pk %}">
+                    {{ config.title }} — 
+                    Duration: {{ config.get_duty_duration_display }}
+                </a>
+            </li>
+        {% empty %}
+            <li>No configurations found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

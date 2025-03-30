@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Delete {{ config.title }}</title>
+</head>
+<body>
+    <h1>Delete {{ config.title }}</h1>
+    <p>Are you sure you want to delete this configuration?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+    </form>
+    <a href="{% url 'duty_config_detail' pk=config.pk %}">Cancel</a>
+</body>
+</html>

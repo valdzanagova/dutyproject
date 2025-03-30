@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Configuration Details - #{{ config.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .config-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .actions {
+            margin-bottom: 20px;
+        }
+        .actions a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #007BFF;
+            padding: 5px 10px;
+            border: 1px solid #007BFF;
+            border-radius: 3px;
+        }
+        .actions a:hover {
+            background-color: #007BFF;
+            color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            width: 30%;
+        }
+        ul.override-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        ul.override-list li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <h1>{{ config.title }}</h1>
+        <div class="actions">
+            <a href="{% url 'edit_duty_config' pk=config.pk %}">Edit</a>
+            <a href="{% url 'delete_duty_config' pk=config.pk %}">Delete</a>
+            <a href="{% url 'duty_config_list' %}">Back to List</a>
+            <a href="{% url 'duty_config_schedule' pk=config.pk %}">Show full schedule</a>
+        </div>
+        <table>
+            <tbody>
+                {% if config.team %}
+                <tr>
+                    <th>Team</th>
+                    <td>{{ config.team|join:", " }}</td>
+                </tr>
+                {% endif %}
+                {% if config.duty_duration %}
+                <tr>
+                    <th>Duty Duration</th>
+                    <td>{{ config.get_duty_duration_display }}</td>
+                </tr>
+                {% endif %}
+                {% if config.sprint_start_date %}
+                <tr>
+                    <th>Sprint start date</th>
+                    <td>{{ config.sprint_start_date }}</td>
+                </tr>
+                {% endif %}
+                {% if config.channel_id %}
+                <tr>
+                    <th>Channel ID</th>
+                    <td>{{ config.channel_id }}</td>
+                </tr>
+                {% endif %}
+                {% if config.header_text %}
+                <tr>
+                    <th>Header Text</th>
+                    <td>{{ config.header_text }}</td>
+                </tr>
+                {% endif %}
+                {% if config.footer_text %}
+                <tr>
+                    <th>Footer Text</th>
+                    <td>{{ config.footer_text }}</td>
+                </tr>
+                {% endif %}
+
+                {% comment %}
+                {% endcomment %}
+                {% with day0="Monday" day1="Tuesday" day2="Wednesday" day3="Thursday" day4="Friday" %}
+                    
+                    {% if config.duty_duration == 7 or config.duty_duration == 14 %}
+                        {% if config.first_week %}
+                        <tr>
+                            <th>First Week Overrides</th>
+                            <td>
+                                <ul class="override-list">
+                                    {% for day_key, overrides in config.first_week.items %}
+                                        {% if overrides.send %}
+                                        <li>
+                                            <strong>
+                                                {% if day_key == "0" %}
+                                                    {{ day0 }}
+                                                {% elif day_key == "1" %}
+                                                    {{ day1 }}
+                                                {% elif day_key == "2" %}
+                                                    {{ day2 }}
+                                                {% elif day_key == "3" %}
+                                                    {{ day3 }}
+                                                {% elif day_key == "4" %}
+                                                    {{ day4 }}
+                                                {% endif %}
+                                                :
+                                            </strong>
+                                            {% if overrides.overwrite_header %} Header: {{ overrides.overwrite_header }}{% endif %}
+                                            {% if overrides.overwrite_footer %} | Footer: {{ overrides.overwrite_footer }}{% endif %}
+                                            {% if overrides.mention is not None %} | Mention: {{ overrides.mention }}{% endif %}
+                                            {% if overrides.keep_random is not None %} | Keep random: {{ overrides.keep_random }}{% endif %}
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if config.duty_duration == 14 and config.second_week %}
+                        <tr>
+                            <th>Second Week Overrides</th>
+                            <td>
+                                <ul class="override-list">
+                                    {% for day_key, overrides in config.second_week.items %}
+                                        {% if overrides.send %}
+                                        <li>
+                                            <strong>
+                                                {% if day_key == "0" %}
+                                                    {{ day0 }}
+                                                {% elif day_key == "1" %}
+                                                    {{ day1 }}
+                                                {% elif day_key == "2" %}
+                                                    {{ day2 }}
+                                                {% elif day_key == "3" %}
+                                                    {{ day3 }}
+                                                {% elif day_key == "4" %}
+                                                    {{ day4 }}
+                                                {% endif %}
+                                                :
+                                            </strong>
+                                            {% if overrides.overwrite_header %} Header: {{ overrides.overwrite_header }}{% endif %}
+                                            {% if overrides.overwrite_footer %} | Footer: {{ overrides.overwrite_footer }}{% endif %}
+                                            {% if overrides.mention is not None %} | Mention: {{ overrides.mention }}{% endif %}
+                                            {% if overrides.keep_random is not None %} | Keep random: {{ overrides.keep_random }}{% endif %}
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endwith %}
+
+                {% if config.created_at %}
+                <tr>
+                    <th>Created At</th>
+                    <td>{{ config.created_at }}</td>
+                </tr>
+                {% endif %}
+
+                {% if config.last_modified_by %}
+                <tr>
+                    <th>Last modified by</th>
+                    <td>{{ config.last_modified_by }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

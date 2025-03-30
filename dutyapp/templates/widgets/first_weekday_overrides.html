@@ -1,0 +1,69 @@
+<div id="widget_{{ widget.name }}" class="field-container">
+    <h2>Weekday Overrides</h2>
+    {% for day in widget.days %}
+    <div class="weekday-row" id="{{ widget.name }}_row_{{ day.key }}">
+        <div class="weekday-title">{{ day.name }}</div>
+
+        <div>
+            <label>Send:</label>
+            <input type="checkbox"
+                   name="{{ widget.name }}_{{ day.key }}_send"
+                   id="{{ widget.name }}_send_{{ day.key }}"
+                   {% if day.data.send %}checked{% endif %}>
+        </div>
+
+        <div class="weekday-details"
+             id="{{ widget.name }}_details_{{ day.key }}"
+             {% if not day.data.send %}style="display:none;"{% endif %}>
+
+            <div>
+                <label>Mention:</label>
+                <input type="checkbox"
+                       name="{{ widget.name }}_{{ day.key }}_mention"
+                       id="{{ widget.name }}_mention_{{ day.key }}"
+                       {% if day.data.mention %}checked{% endif %}>
+            </div>
+
+            <div>
+                <label>Keep Random:</label>
+                <input type="checkbox"
+                       name="{{ widget.name }}_{{ day.key }}_keep_random"
+                       id="{{ widget.name }}_keep_random_{{ day.key }}"
+                       {% if day.data.keep_random %}checked{% endif %}>
+            </div>
+
+            <div>
+                <label>Overwrite Header:</label>
+                <textarea name="{{ widget.name }}_{{ day.key }}_overwrite_header"
+                          rows="3" cols="40">{{ day.data.overwrite_header|default_if_none:'' }}</textarea>
+            </div>
+
+            <div>
+                <label>Overwrite Footer:</label>
+                <textarea name="{{ widget.name }}_{{ day.key }}_overwrite_footer"
+                          rows="3" cols="40">{{ day.data.overwrite_footer|default_if_none:'' }}</textarea>
+            </div>
+
+        </div><!-- /weekday-details -->
+    </div><!-- /weekday-row -->
+    {% endfor %}
+</div><!-- /field-container -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var container = document.getElementById('widget_{{ widget.name }}');
+
+    container.querySelectorAll('input[type="checkbox"][id^="{{ widget.name }}_send_"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            var parts = this.id.split('_');
+            var dayKey = parts[parts.length - 1];
+            var details = container.querySelector('#{{ widget.name }}_details_' + dayKey);
+            if (this.checked) {
+                details.style.display = '';
+            } else {
+                details.style.display = 'none';
+            }
+        });
+    });
+});
+</script>

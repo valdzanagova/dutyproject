@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Entering mail</title>
+</head>
+<body>
+    <h1>Enter your email address</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send code</button>
+    </form>
+</body>
+</html>

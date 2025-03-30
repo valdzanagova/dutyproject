@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create Duty Configuration</title>
+    <style>
+        .field-container {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        small {
+            display: block;
+            color: #666;
+        }
+        .custom-textarea {
+            height: 30px;
+            width: 600px;
+        }
+        .weekday-row {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .weekday-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .weekday-details {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Duty Configuration</h1>
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Title Text -->
+        <div class="field-container">
+            {{ form.title.label_tag }}<br>
+            {{ form.title }}<br>
+            <small>{{ form.title.help_text }}</small>
+        </div>
+        
+        <!-- Team Field -->
+        <div class="field-container">
+            {{ form.team.label_tag }}<br>
+            {{ form.team }}<br>
+            <small>{{ form.team.help_text }}</small>
+        </div>
+        
+        <!-- Channel ID -->
+        <div class="field-container">
+            {{ form.channel_id.label_tag }}<br>
+            {{ form.channel_id }}<br>
+            <small>{{ form.channel_id.help_text }}</small>
+        </div>
+        
+        <!-- Header Text -->
+        <div class="field-container">
+            {{ form.header_text.label_tag }}<br>
+            {{ form.header_text }}<br>
+            <small>{{ form.header_text.help_text }}</small>
+        </div>
+        
+        <!-- Footer Text -->
+        <div class="field-container">
+            {{ form.footer_text.label_tag }}<br>
+            {{ form.footer_text }}<br>
+            <small>{{ form.footer_text.help_text }}</small>
+        </div>
+        
+        <!-- Duty Duration -->
+        <div class="field-container">
+            {{ form.duty_duration.label_tag }}<br>
+            {{ form.duty_duration }}<br>
+            <small>{{ form.duty_duration.help_text }}</small>
+        </div>
+        
+        <!-- Sprint start date (only displayed if Duty Duration in (7, 14)) -->
+        <div id="sprint_start_date_container" class="field-container">
+            {{ form.sprint_start_date.label_tag }}<br>
+            {{ form.sprint_start_date }}<br>
+            <small>{{ form.sprint_start_date.help_text }}</small>
+        </div>
+        
+        <!-- Block Weekday Overrides (only displayed if Duty Duration > 1) -->
+        {{ form.first_week }}
+        
+        <!-- Block for the fields of the second week (only displayed if Duty Duration == 14) -->
+        {{ form.second_week }}
+        
+        <!-- Buttons -->
+        <button type="submit">Save Configuration</button>
+        <a href="{% url 'duty_config_list' %}" style="margin-left: 10px;">Cancel</a>
+    </form>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var dutyDurationField = document.getElementById('id_duty_duration');
+        var SprintStartDateContainer = document.getElementById('sprint_start_date_container');
+        var weekdayOverridesContainer = document.getElementById('widget_first_week');
+        var week2OverridesContainer = document.getElementById('widget_second_week');
+
+        function toggleOverrides() {
+            var value = dutyDurationField.value;
+            if (value === "1") {
+                if (SprintStartDateContainer) SprintStartDateContainer.style.display = 'none';
+                if (weekdayOverridesContainer) weekdayOverridesContainer.style.display = 'none';
+                if (week2OverridesContainer) week2OverridesContainer.style.display = 'none';
+            } else if (value === "7") {
+                if (SprintStartDateContainer) SprintStartDateContainer.style.display = 'block';
+                if (weekdayOverridesContainer) weekdayOverridesContainer.style.display = 'block';
+                if (week2OverridesContainer) week2OverridesContainer.style.display = 'none';
+            } else if (value === "14") {
+                if (SprintStartDateContainer) SprintStartDateContainer.style.display = 'block';
+                if (weekdayOverridesContainer) weekdayOverridesContainer.style.display = 'block';
+                if (week2OverridesContainer) week2OverridesContainer.style.display = 'block';
+            } else {
+                if (weekdayOverridesContainer) weekdayOverridesContainer.style.display = 'none';
+                if (week2OverridesContainer) week2OverridesContainer.style.display = 'none';
+            }
+        }
+        dutyDurationField.addEventListener('change', toggleOverrides);
+        toggleOverrides();
+
+        // Functions for managing the visibility of details for each day (first week)
+        function toggleDayDetails(dayPrefix) {
+            var sendCheckbox = document.getElementById('id_' + dayPrefix + '_send');
+            var detailsContainer = document.getElementById('details_' + dayPrefix);
+            if (sendCheckbox && detailsContainer) {
+                if (sendCheckbox.checked) {
+                    detailsContainer.style.display = 'block';
+                } else {
+                    detailsContainer.style.display = 'none';
+                }
+            }
+        }
+        // Features for the second week
+        function toggleDayDetailsWeek2(dayPrefix) {
+            var sendCheckbox = document.getElementById('id_week2_' + dayPrefix + '_send');
+            var detailsContainer = document.getElementById('week2_details_' + dayPrefix);
+            if (sendCheckbox && detailsContainer) {
+                if (sendCheckbox.checked) {
+                    detailsContainer.style.display = 'block';
+                } else {
+                    detailsContainer.style.display = 'none';
+                }
+            }
+        }
+
+        ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(function(day) {
+            var sendCheckbox = document.getElementById('id_' + day + '_send');
+            if (sendCheckbox) {
+                sendCheckbox.addEventListener('change', function() {
+                    toggleDayDetails(day);
+                });
+                toggleDayDetails(day);
+            }
+        });
+        ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(function(day) {
+            var sendCheckbox = document.getElementById('id_week2_' + day + '_send');
+            if (sendCheckbox) {
+                sendCheckbox.addEventListener('change', function() {
+                    toggleDayDetailsWeek2(day);
+                });
+                toggleDayDetailsWeek2(day);
+            }
+        });
+    });
+    </script>
+</body>
+</html>

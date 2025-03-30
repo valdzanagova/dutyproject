@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Full Schedule for Configuration {{ config.title }}</title>
+</head>
+<body>
+    <h1>Full Schedule for Configuration #{{ config.title }}</h1>
+    <p>
+        Team: {{ config.team|join:", " }} — 
+        Duration: {{ config.get_duty_duration_display }}
+    </p>
+    <a href="{% url 'duty_config_detail' pk=config.pk %}">Back to Configuration Details</a>
+    <ul>
+        {% for assignment in assignments %}
+            <li>
+                {{ assignment.date }}
+            </li>
+            <p>
+                Duty person — {{ assignment.duty_person }}
+                {% if assignment.random is True %}<br>Random — {{ assignment.random }}{% endif %}
+                {% if assignment.last_modified_by %}<br>Last modified by — {{ assignment.last_modified_by }}{% endif %}
+            </p>
+        {% empty %}
+            <li>No assignments found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
